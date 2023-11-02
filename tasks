@@ -1,0 +1,104 @@
+Project: Simple Task Manager
+Project Description: Create a console-based task manager application in Java. Users can add, view, edit, and delete tasks. Tasks can have a title, description, and due date.
+Tasks:
+1.	Setup Project:
+        • Create a new Java project using your preferred IDE or build tool (e.g., Maven or Gradle).
+2.	Create Task Class:
+        • Define a Task class with attributes like title, description, due date, and status.
+3.	Implement Task Management:
+        • Implement basic functionality to add, view, edit, and delete tasks.
+        • Use an array or a list to store tasks.
+4.	User Interface:
+        • Create a simple text-based user interface to interact with the application.
+        • Provide options for adding, viewing, editing, and deleting tasks.
+5.	Task Validation:
+        • Implement validation for task data (e.g., ensure the due date is in the future).
+        • Provide error messages for invalid input.
+6.	File Storage:
+        • Add functionality to save tasks to a text file and load them when the application starts.
+        • Use file I/O to achieve this.
+7.	Task Sorting:
+        • Allow users to sort tasks based on different criteria (e.g., by due date or status).
+        • Implement sorting algorithms.
+8.	Task Filtering:
+        • Implement filtering options to display tasks based on their status (e.g., completed or pending).
+9.	Persistence:
+        • Improve task persistence by saving data to a database (e.g., SQLite or H2) instead of a text file.
+10.	Command-Line Arguments:
+        • Modify the application to accept command-line arguments to perform actions (e.g., adding a task from the command line).
+11.	Data Validation:
+        • Enhance data validation by validating user input and handling potential exceptions gracefully.
+12.	Error Handling:
+        • Implement error handling to provide informative error messages for different situations.
+13.	Documentation:
+        • Create JavaDoc comments for your classes and methods to generate documentation.
+14.	Unit Testing:
+        • Write unit tests for critical parts of your code using JUnit or TestNG.
+15.	User Guide:
+        • Create a user guide or help section in the application to guide users on how to use it effectively.
+16.	UI Improvement (Optional):
+        • Consider improving the user interface using a library like Curses or creating a simple graphical user interface with JavaFX or Swing.
+17.	Deployment (Optional):
+        • Package the application as a JAR file and create a deployment script or installer.
+
+Detailed task
+
+Project: Simple Task Manager
+Project Description: Create a console-based task management application in Java. Users can add, view, edit, and delete tasks. Tasks can have a title, description, due date, and status.
+Detailed Tasks:
+1.	Project Setup:
+        • Create a new Java project using your preferred IDE or build tool.
+        • Set up a Git repository for version control.
+2.	Task Class:
+        • Create a Task class with attributes like title, description, dueDate, and status.
+        • Implement getter and setter methods for each attribute.
+3.	User Interface (UI):
+        • Build a simple text-based UI for the application using the console.
+        • Create a menu system with options for adding, viewing, editing, and deleting tasks.
+        • Display a welcome message and the list of available actions.
+4.	Add a Task:
+        • Allow the user to add a new task.
+        • Prompt the user to input the task's title, description, due date, and status (e.g., pending or completed).
+        • Validate the due date to ensure it's in the future.
+5.	View Tasks:
+        • Implement a feature to view all existing tasks.
+        • List tasks with their titles, due dates, and statuses.
+6.	Edit a Task:
+        • Enable users to edit an existing task.
+        • Allow the user to select a task by its ID and update its attributes.
+7.	Delete a Task:
+        • Implement a feature to delete a task by its ID.
+        • Ask for confirmation before deleting the task.
+8.	File Storage:
+        • Create a file (e.g., "tasks.txt") to store task data.
+        • Implement methods to read tasks from the file at application startup and save tasks to the file when changes are made.
+9.	Sorting Tasks:
+        • Allow users to sort tasks based on different criteria (e.g., title, due date, or status).
+        • Implement sorting algorithms for the task list.
+10.	Filtering Tasks:
+        • Enable users to filter tasks based on their status (e.g., view only completed or pending tasks).
+11.	Command-Line Arguments:
+        • Modify the application to accept command-line arguments to perform actions (e.g., adding a task, editing a task, etc.).
+12.	Data Validation:
+        • Enhance data validation by checking user input for potential errors.
+        • Display informative error messages for invalid input.
+13.	Error Handling:
+        • Implement error handling for exceptional situations (e.g., file I/O errors or invalid data).
+        • Provide clear error messages to users.
+14.	Persistence with a Database (Optional):
+        • Replace the file storage with a database (e.g., SQLite or H2).
+        • Create tables to store task data and implement database access methods.
+15.	Unit Testing:
+        • Write unit tests using a testing framework like JUnit or TestNG.
+        • Test critical methods, including those responsible for task sorting and filtering.
+16.	User Guide:
+        • Create a user guide or help section that explains how to use the application.
+        • Include information on all available commands and features.
+17.	JavaDoc Documentation:
+        • Add JavaDoc comments to your classes and methods to generate documentation.
+18.	UI Improvement (Optional):
+        • Consider enhancing the text-based UI with libraries like Curses.
+        • Create a simple graphical user interface using JavaFX or Swing.
+19.	Deployment (Optional):
+        • Package the application as a JAR file.
+        • Create a deployment script or installer for the application.

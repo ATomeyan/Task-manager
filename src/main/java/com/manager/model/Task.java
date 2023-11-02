@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * @author Artur Tomeyan
@@ -12,9 +13,9 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class Task {
-
+    private String id;
     private String title;
     private String description;
     private LocalDate dueDate;
-    private Status status;
+    private String status;
 }
