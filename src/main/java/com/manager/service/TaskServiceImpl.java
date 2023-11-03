@@ -1,16 +1,18 @@
 package com.manager.service;
 
+import com.manager.database.Query;
+import com.manager.database.connector.DBConnector;
 import com.manager.model.Task;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Artur Tomeyan
@@ -18,30 +20,71 @@ import java.util.UUID;
  */
 public class TaskServiceImpl implements TaskService {
 
+    private static final DBConnector DB_CONNECTOR = DBConnector.getDbConnector();
+    private final LocalDateTime now = LocalDateTime.now();
+    private final String addedDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
     @Override
     public void addTask() {
 
+        createTable();
+
         Task createdTask = new Task();
 
-            createdTask.setId(generateId());
-            createdTask.setTitle(getInput("Title: "));
-            createdTask.setDescription(getInput("Description: "));
-            createdTask.setStatus(getInput("Status: "));
+        createdTask.setId(generateId());
+        createdTask.setTitle(getInput("Title: "));
+        createdTask.setDescription(getInput("Description: "));
+        createdTask.setStatus(getInput("Status: "));
 
-            LocalDate dueDate = LocalDate.parse(getInput("Due date: "));
+        createdTask.setTaskCreatedAt(now);
 
-            if (LocalDate.now().isBefore(dueDate))
-                createdTask.setDueDate(dueDate);
-            else {
-                System.out.println("The due date is not valid and the task was rejected. Please input a valid due date.");
-                return;
-            }
+        LocalDate dueDate = LocalDate.parse(getInput("Due date: "));
+
+        if (LocalDate.now().isBefore(dueDate))
+            createdTask.setDueDate(dueDate);
+        else {
+            System.out.println("The due date is not valid and the task was rejected. Please input a valid due date.");
+            return;
+        }
 
         addTasksToFile(createdTask);
+
+        try (PreparedStatement preparedStatement = DB_CONNECTOR.connection().prepareStatement(Query.insertIntoTable)) {
+
+            preparedStatement.setString(1, createdTask.getId());
+            preparedStatement.setString(2, createdTask.getTitle());
+            preparedStatement.setString(3, createdTask.getDescription());
+            preparedStatement.setString(4, String.valueOf(createdTask.getDueDate()));
+            preparedStatement.setString(5, createdTask.getStatus());
+            preparedStatement.setString(6, addedDate);
+            preparedStatement.setString(7, null);
+            preparedStatement.execute();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void editTask(String id) {
+    public void editTask() {
+
+//        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("Task.txt"))) {
+//
+//            Map<String, String> tasks = new HashMap<>();
+//            String s;
+//
+//            while ((s = bufferedReader.readLine()) != null){
+//                tasks.put(s, s);
+//                System.out.println(tasks);
+//            }
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        Task byId = findById("76a127e3-2e75-4252-9314-ed8b0981c761");
+
+        System.out.println(byId);
     }
 
     @Override
@@ -54,6 +97,42 @@ public class TaskServiceImpl implements TaskService {
         return null;
     }
 
+    private Task findById(String id) {
+
+        try (PreparedStatement preparedStatement = DB_CONNECTOR.connection().prepareStatement(Query.findByID)) {
+
+            preparedStatement.setString(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return new Task(
+                        resultSet.getString("id"),
+                        resultSet.getString("title"),
+                        resultSet.getString("description"),
+                        resultSet.getString("status"),
+                        resultSet.getTimestamp("due_date").toLocalDateTime().toLocalDate(),
+                        resultSet.getTimestamp("task_created_at").toLocalDateTime(),
+                        resultSet.getTimestamp("task_changed_at").toLocalDateTime()
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private void createTable() {
+        try (Statement statement = DB_CONNECTOR.connection().createStatement()) {
+
+            statement.execute(Query.createTable);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private String getInput(String prompt) {
         System.out.print(prompt);
 
@@ -63,9 +142,6 @@ public class TaskServiceImpl implements TaskService {
 
     private void addTasksToFile(Task task) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("Task.txt", true))) {
-
-            LocalDateTime now = LocalDateTime.now();
-            String addedDate = now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 
             writer.write("Added new task at " + addedDate);
             writer.newLine();

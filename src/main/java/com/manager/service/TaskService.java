@@ -12,7 +12,7 @@ public interface TaskService {
 
     void addTask();
 
-    void editTask(String id);
+    void editTask();
 
     boolean deleteTask(String id);
 

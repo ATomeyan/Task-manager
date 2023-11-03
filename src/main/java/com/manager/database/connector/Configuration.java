@@ -1,4 +1,4 @@
-package com.manager.connector;
+package com.manager.database.connector;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,8 +18,8 @@ public final class Configuration {
     private Configuration() {
         properties = new Properties();
 
-        try {
-            InputStream inputStream = Files.newInputStream(Paths.get("database.properties"));
+        try (InputStream inputStream = Files.newInputStream(Paths.get("src/main/resources/database.properties"))){
+
             properties.load(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);

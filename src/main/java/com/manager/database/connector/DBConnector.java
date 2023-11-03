@@ -1,9 +1,13 @@
-package com.manager.connector;
+package com.manager.database.connector;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * @author Artur Tomeyan
+ * @date 02.11.2023
+ */
 public final class DBConnector {
 
     private static final Configuration CONFIGURATION = Configuration.getConfiguration();
