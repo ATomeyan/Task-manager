@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,4 +25,17 @@ public class Task {
     private LocalDate dueDate;
     private LocalDateTime taskCreatedAt;
     private LocalDateTime taskChangedAt;
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("title", title)
+                .append("description", description)
+                .append("status", status)
+                .append("dueDate", dueDate)
+                .append("taskCreatedAt", taskCreatedAt)
+                .append("taskChangedAt", taskChangedAt)
+                .toString();
+    }
 }
