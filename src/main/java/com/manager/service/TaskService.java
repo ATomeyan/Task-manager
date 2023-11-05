@@ -3,6 +3,7 @@ package com.manager.service;
 import com.manager.model.Task;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Artur Tomeyan
@@ -10,11 +11,13 @@ import java.util.List;
  */
 public interface TaskService {
 
-    void addTask();
+    Task addTask();
 
     void editTask();
 
-    boolean deleteTask(String id);
+    boolean deleteTask();
 
     List<Task> viewAllTasks();
+
+    Optional<Task> findById(String id);
 }
