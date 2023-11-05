@@ -1,7 +1,6 @@
 package com.manager;
 
-import com.manager.service.TaskService;
-import com.manager.service.TaskServiceImpl;
+import com.manager.ui.ConsoleUI;
 
 /**
  * @author Artur Tomeyan
@@ -9,11 +8,6 @@ import com.manager.service.TaskServiceImpl;
  */
 public class Main {
     public static void main(String[] args) {
-
-        TaskService taskService = new TaskServiceImpl();
-
-        taskService.addTask();
-
-//        taskService.editTask();
+        new ConsoleUI().ui();
     }
 }
