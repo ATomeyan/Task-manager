@@ -61,6 +61,9 @@ public class ConsoleUI {
                     taskService.deleteTask();
                     break;
                 case 4:
+                    taskService.viewAllTasks();
+                    System.out.println("Press the enter to return the menu.");
+                    break;
                 case 5:
                     System.out.println("Exiting application.");
                     scanner.close();
