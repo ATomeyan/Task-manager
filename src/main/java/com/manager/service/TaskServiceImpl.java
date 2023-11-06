@@ -5,17 +5,10 @@ import com.manager.database.connector.DBConnector;
 import com.manager.model.Task;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * @author Artur Tomeyan
@@ -25,7 +18,6 @@ public class TaskServiceImpl implements TaskService {
 
     private static final DBConnector DB_CONNECTOR = DBConnector.getDbConnector();
     private final LocalDateTime now = LocalDateTime.now();
-    private final String addedDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 
     @Override
     public Task addTask() {
@@ -38,7 +30,6 @@ public class TaskServiceImpl implements TaskService {
         createdTask.setTitle(getInput("Title: "));
         createdTask.setDescription(getInput("Description: "));
         createdTask.setStatus(getInput("Status: "));
-
         createdTask.setTaskCreatedAt(now);
 
         LocalDate dueDate = LocalDate.parse(getInput("Due date: "));
@@ -83,12 +74,12 @@ public class TaskServiceImpl implements TaskService {
             try (PreparedStatement preparedStatement = DB_CONNECTOR.connection().prepareStatement(Query.delete)) {
 
                 preparedStatement.setString(1, taskById.get().getId());
-                preparedStatement.executeQuery();
+                preparedStatement.executeUpdate();
 
                 return true;
 
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                System.out.println(e.getMessage());
             }
         }
         return false;
@@ -99,27 +90,22 @@ public class TaskServiceImpl implements TaskService {
 
         try (Statement statement = DB_CONNECTOR.connection().createStatement()) {
 
-            List<Task> tasks = null;
-
+            List<Task> tasks = new ArrayList<>();
             ResultSet resultSet = statement.executeQuery(Query.viewAllTasks);
+
+
             while (resultSet.next()) {
-
-                tasks = new ArrayList<>();
-
-                tasks.add(new Task(
-                        resultSet.getString("id"),
-                        resultSet.getString("title"),
-                        resultSet.getString("description"),
-                        resultSet.getString("status"),
-                        resultSet.getTimestamp("due_date").toLocalDateTime().toLocalDate(),
-                        resultSet.getTimestamp("task_create_at").toLocalDateTime(),
-                        resultSet.getTimestamp("task_changed_at").toLocalDateTime()));
+                Task task = extractTaskFromResultSet(resultSet);
+                tasks.add(task);
             }
+
             return tasks;
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
+
+        return Collections.emptyList();
     }
 
     @Override
@@ -132,15 +118,8 @@ public class TaskServiceImpl implements TaskService {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                return Optional.of(new Task(
-                        resultSet.getString("id"),
-                        resultSet.getString("title"),
-                        resultSet.getString("description"),
-                        resultSet.getString("status"),
-                        resultSet.getTimestamp("due_date").toLocalDateTime().toLocalDate(),
-                        resultSet.getTimestamp("task_created_at").toLocalDateTime(),
-                        resultSet.getTimestamp("task_changed_at").toLocalDateTime()
-                ));
+
+                return Optional.of(extractTaskFromResultSet(resultSet));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -149,7 +128,29 @@ public class TaskServiceImpl implements TaskService {
         return Optional.empty();
     }
 
+    private Task extractTaskFromResultSet(ResultSet resultSet) throws SQLException {
+        Task value = new Task();
+        value.setId(resultSet.getString("id"));
+        value.setTitle(resultSet.getString("title"));
+        value.setDescription(resultSet.getString("description"));
+        value.setStatus(resultSet.getString("status"));
+        value.setDueDate(resultSet.getDate("due_date").toLocalDate());
+
+        Timestamp task_created_at = resultSet.getTimestamp("task_created_at");
+        Timestamp task_changed_at = resultSet.getTimestamp("task_changed_at");
+
+        if (task_created_at != null) {
+            value.setTaskCreatedAt(task_created_at.toLocalDateTime());
+        }
+        if (task_changed_at != null) {
+            value.setTaskChangedAt(task_changed_at.toLocalDateTime());
+        }
+
+        return value;
+    }
+
     private void saveTask(Task createdTask) {
+
         try (PreparedStatement preparedStatement = DB_CONNECTOR.connection().prepareStatement(Query.insertIntoTable)) {
 
             preparedStatement.setString(1, createdTask.getId());
@@ -157,8 +158,8 @@ public class TaskServiceImpl implements TaskService {
             preparedStatement.setString(3, createdTask.getDescription());
             preparedStatement.setString(4, String.valueOf(createdTask.getDueDate()));
             preparedStatement.setString(5, createdTask.getStatus());
-            preparedStatement.setString(6, addedDate);
-            preparedStatement.setString(7, null);
+            preparedStatement.setString(6, createdTask.getTaskCreatedAt().toString());
+
             preparedStatement.execute();
 
         } catch (SQLException e) {
@@ -176,10 +177,11 @@ public class TaskServiceImpl implements TaskService {
             preparedStatement.setString(5, updatedTask.getStatus());
             preparedStatement.setString(6, updatedTask.getDueDate().toString());
             preparedStatement.setString(7, updatedTask.getTaskChangedAt().toString());
+
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
     }
 

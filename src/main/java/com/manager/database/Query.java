@@ -12,13 +12,13 @@ public final class Query {
                     "description varchar(255) not null," +
                     "status varchar(255) not null," +
                     "due_date date not null," +
-                    "task_created_at datetime not null," +
-                    "task_changed_at datetime" +
+                    "task_created_at timestamp not null," +
+                    "task_changed_at timestamp" +
             ");";
 
     public static final String viewAllTasks = "select * from task";
 
-    public static final String insertIntoTable = "insert into task(id, title, description, due_date, status, created_at) values (?, ?, ?, ?, ?, ?)";
+    public static final String insertIntoTable = "insert into task(id, title, description, due_date, status, task_created_at) values (?, ?, ?, ?, ?, ?)";
 
     public static final String delete = "delete from task where id = ?";
 

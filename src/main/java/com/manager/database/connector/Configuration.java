@@ -22,7 +22,7 @@ public final class Configuration {
 
             properties.load(inputStream);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
     }
 
