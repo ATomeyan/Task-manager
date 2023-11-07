@@ -43,13 +43,11 @@ public class ConsoleUI {
 
                     String choice = scanner.next();
                     switch (choice) {
-                        case "Yes":
-                            taskFileService.addTasksToFile(task);
-                            break;
-                        case "No":
-                            break;
-                        default:
-                            System.out.println("Invalid choice. Please select a valid option.");
+                        case "Yes", "yes", "Y", "y" -> taskFileService.addTasksToFile(task);
+
+                        case "No", "no", "N", "n" -> {
+                        }
+                        default -> System.out.println("Invalid choice. Please select a valid option.");
                     }
                 }
                 case 2 -> {
@@ -65,12 +63,24 @@ public class ConsoleUI {
                     }
                 }
                 case 4 -> {
-                    List<Task> allTasks = taskService.viewAllTasks();
-                    for (Task task : allTasks) {
-                        System.out.println(task);
-                    }
+                    System.out.println("Do you want to see the task by id?");
+                    System.out.print("Yes/No: ");
+                    String choice = scanner.next();
 
-                    System.out.println("Press the enter to return the menu.");
+                    switch (choice) {
+                        case "Yes", "yes", "Y", "y" -> {
+                            System.out.print("Enter the task id: ");
+                            String id = scanner.next();
+                            taskService.findById(id).ifPresent(System.out::println);
+                        }
+                        case "No", "no", "N", "n" -> {
+                            List<Task> allTasks = taskService.viewAllTasks();
+                            for (Task task : allTasks) {
+                                System.out.println(task);
+                            }
+                        }
+                        default -> System.out.println("Invalid choice. Please select a valid option.");
+                    }
                 }
                 case 5 -> {
                     System.out.println("Exiting application.");
@@ -88,14 +98,13 @@ public class ConsoleUI {
 
         String choice = scanner.next();
         switch (choice) {
-            case "Yes":
+            case "Yes", "yes", "Y", "y" -> {
                 List<Task> tasks = taskService.viewAllTasks();
                 taskFileService.updateTaskFile(tasks);
-                break;
-            case "No":
-                break;
-            default:
-                System.out.println("Invalid choice. Please select a valid option.");
+            }
+            case "No", "no", "N", "n" -> {
+            }
+            default -> System.out.println("Invalid choice. Please select a valid option.");
         }
     }
 }

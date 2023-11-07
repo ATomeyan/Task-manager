@@ -4,10 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * @author Artur Tomeyan
@@ -23,19 +22,17 @@ public class Task {
     private String description;
     private String status;
     private LocalDate dueDate;
-    private LocalDateTime taskCreatedAt;
-    private LocalDateTime taskChangedAt;
+    private Timestamp taskCreatedAt;
+    private Timestamp taskChangedAt;
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("id", id)
-                .append("title", title)
-                .append("description", description)
-                .append("status", status)
-                .append("dueDate", dueDate)
-                .append("taskCreatedAt", taskCreatedAt)
-                .append("taskChangedAt", taskChangedAt)
-                .toString();
+        return "\nid: '" + id + '\'' +
+                "\ntitle: '" + title + '\'' +
+                "\ndescription: '" + description + '\'' +
+                "\nstatus: '" + status + '\'' +
+                "\ndueDate: " + dueDate +
+                "\ntaskCreatedAt: " + taskCreatedAt +
+                "\ntaskChangedAt: " + taskChangedAt;
     }
 }

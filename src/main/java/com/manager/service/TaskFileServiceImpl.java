@@ -5,7 +5,7 @@ import com.manager.model.Task;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -13,8 +13,6 @@ import java.util.List;
  * @date 05.11.2023
  */
 public class TaskFileServiceImpl implements TaskFileService {
-
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Override
     public void addTasksToFile(Task task) {
@@ -25,7 +23,7 @@ public class TaskFileServiceImpl implements TaskFileService {
                     "Description: " + task.getDescription() + "\n" +
                     "Due date: " + task.getDueDate() + "\n" +
                     "Status: " + task.getStatus() + "\n" +
-                    "Task created at: " + task.getTaskCreatedAt().format(dateTimeFormatter));
+                    "Task created at: " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(task.getTaskCreatedAt()));
 
             writer.newLine();
             writer.flush();

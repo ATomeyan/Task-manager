@@ -28,12 +28,12 @@ public final class Query {
 
     public static final String sortAllTasksByStatus = "select * from task order by status";
 
-    public static final String updateTaskById = "update task set " +
+    public static final String updateTaskById = "UPDATE task SET " +
             "title = ?, " +
             "description = ?, " +
             "status = ?, " +
-            "due_date = ?" +
-            "task_created_at = ?," +
-            "task_changed_at = ?" +
-            "where id = ?";
+            "due_date = ?, " +
+            "task_created_at = ?, " +
+            "task_changed_at = ? " +
+            "WHERE id = ?";
 }
