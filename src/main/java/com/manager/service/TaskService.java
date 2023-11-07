@@ -19,5 +19,9 @@ public interface TaskService {
 
     List<Task> viewAllTasks();
 
+    List<Task> viewAllTasksSortedByDueDate();
+
+    List<Task> viewAllTasksSortedByStatus();
+
     Optional<Task> findById(String id);
 }

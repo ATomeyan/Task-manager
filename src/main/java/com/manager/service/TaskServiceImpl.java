@@ -30,7 +30,7 @@ public class TaskServiceImpl implements TaskService {
         createdTask.setTitle(getInput("Title: "));
         createdTask.setDescription(getInput("Description: "));
         createdTask.setStatus(getInput("Status: "));
-        createdTask.setTaskCreatedAt(now);
+        createdTask.setTaskCreatedAt(Timestamp.valueOf(now));
 
         LocalDate dueDate = LocalDate.parse(getInput("Due date: "));
 
@@ -47,9 +47,10 @@ public class TaskServiceImpl implements TaskService {
 
         Optional<Task> taskById = findById(getInput("Enter the task id to find task: "));
 
-        System.out.println(taskById);
-
         if (taskById.isPresent()) {
+
+            System.out.println(taskById.get());
+
             taskById.get().setTitle(getInput("Title: "));
             taskById.get().setDescription(getInput("Description: "));
 
@@ -59,7 +60,7 @@ public class TaskServiceImpl implements TaskService {
                 taskById.get().setDueDate(changedDate);
 
             taskById.get().setStatus(getInput("Status: "));
-            taskById.get().setTaskChangedAt(LocalDateTime.now());
+            taskById.get().setTaskChangedAt(Timestamp.valueOf(LocalDateTime.now()));
 
             updateTask(taskById.get());
         }
@@ -93,6 +94,47 @@ public class TaskServiceImpl implements TaskService {
             List<Task> tasks = new ArrayList<>();
             ResultSet resultSet = statement.executeQuery(Query.viewAllTasks);
 
+            while (resultSet.next()) {
+                Task task = extractTaskFromResultSet(resultSet);
+                tasks.add(task);
+            }
+
+            return tasks;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Task> viewAllTasksSortedByDueDate() {
+        try (Statement statement = DB_CONNECTOR.connection().createStatement()) {
+
+            List<Task> tasks = new ArrayList<>();
+            ResultSet resultSet = statement.executeQuery(Query.sortAllTasksByDueDate);
+
+            while (resultSet.next()) {
+                Task task = extractTaskFromResultSet(resultSet);
+                tasks.add(task);
+            }
+
+            return tasks;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Task> viewAllTasksSortedByStatus() {
+        try (Statement statement = DB_CONNECTOR.connection().createStatement()) {
+
+            List<Task> tasks = new ArrayList<>();
+            ResultSet resultSet = statement.executeQuery(Query.sortAllTasksByStatus);
 
             while (resultSet.next()) {
                 Task task = extractTaskFromResultSet(resultSet);
@@ -140,10 +182,10 @@ public class TaskServiceImpl implements TaskService {
         Timestamp task_changed_at = resultSet.getTimestamp("task_changed_at");
 
         if (task_created_at != null) {
-            value.setTaskCreatedAt(task_created_at.toLocalDateTime());
+            value.setTaskCreatedAt(task_created_at);
         }
         if (task_changed_at != null) {
-            value.setTaskChangedAt(task_changed_at.toLocalDateTime());
+            value.setTaskChangedAt(task_changed_at);
         }
 
         return value;
@@ -170,13 +212,13 @@ public class TaskServiceImpl implements TaskService {
     private void updateTask(Task updatedTask) {
         try (PreparedStatement preparedStatement = DB_CONNECTOR.connection().prepareStatement(Query.updateTaskById)) {
 
-            preparedStatement.setString(1, updatedTask.getId());
-            preparedStatement.setString(2, updatedTask.getTitle());
-            preparedStatement.setString(3, updatedTask.getDescription());
+            preparedStatement.setString(1, updatedTask.getTitle());
+            preparedStatement.setString(2, updatedTask.getDescription());
+            preparedStatement.setString(3, updatedTask.getStatus());
             preparedStatement.setString(4, String.valueOf(updatedTask.getDueDate()));
-            preparedStatement.setString(5, updatedTask.getStatus());
-            preparedStatement.setString(6, updatedTask.getDueDate().toString());
-            preparedStatement.setString(7, updatedTask.getTaskChangedAt().toString());
+            preparedStatement.setTimestamp(5, updatedTask.getTaskCreatedAt());
+            preparedStatement.setTimestamp(6, updatedTask.getTaskChangedAt());
+            preparedStatement.setString(7, updatedTask.getId());
 
             preparedStatement.executeUpdate();
 
