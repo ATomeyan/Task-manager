@@ -15,13 +15,15 @@ public interface TaskService {
 
     void editTask();
 
-    boolean deleteTask();
+    boolean deleteTask(String id);
 
     List<Task> viewAllTasks();
 
     List<Task> viewAllTasksSortedByDueDate();
 
     List<Task> viewAllTasksSortedByStatus();
+
+    List<Task> tasksByFilteringStatus(String status);
 
     Optional<Task> findById(String id);
 }

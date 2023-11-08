@@ -3,7 +3,7 @@ package com.manager.service;
 import com.manager.database.Query;
 import com.manager.database.connector.DBConnector;
 import com.manager.model.Task;
-import org.apache.commons.lang3.RandomStringUtils;
+import com.manager.utils.Helper;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -26,13 +26,13 @@ public class TaskServiceImpl implements TaskService {
 
         Task createdTask = new Task();
 
-        createdTask.setId(generateId());
-        createdTask.setTitle(getInput("Title: "));
-        createdTask.setDescription(getInput("Description: "));
-        createdTask.setStatus(getInput("Status: "));
+        createdTask.setId(Helper.generateId());
+        createdTask.setTitle(Helper.getInput("Title: "));
+        createdTask.setDescription(Helper.getInput("Description: "));
+        createdTask.setStatus(Helper.getInput("Status: "));
         createdTask.setTaskCreatedAt(Timestamp.valueOf(now));
 
-        LocalDate dueDate = LocalDate.parse(getInput("Due date: "));
+        LocalDate dueDate = LocalDate.parse(Helper.getInput("Due date: "));
 
         if (validateDate(dueDate))
             createdTask.setDueDate(dueDate);
@@ -45,21 +45,22 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void editTask() {
 
-        Optional<Task> taskById = findById(getInput("Enter the task id to find task: "));
+        System.out.println("----------------------------------------------------------------------------");
+        Optional<Task> taskById = findById(Helper.getInput("Enter the task id to find task: "));
 
         if (taskById.isPresent()) {
 
             System.out.println(taskById.get());
+            System.out.println("\nEnter updating data.");
+            taskById.get().setTitle(Helper.getInput("Title: "));
+            taskById.get().setDescription(Helper.getInput("Description: "));
 
-            taskById.get().setTitle(getInput("Title: "));
-            taskById.get().setDescription(getInput("Description: "));
-
-            LocalDate changedDate = LocalDate.parse(getInput("Due date: "));
+            LocalDate changedDate = LocalDate.parse(Helper.getInput("Due date: "));
 
             if (validateDate(changedDate))
                 taskById.get().setDueDate(changedDate);
 
-            taskById.get().setStatus(getInput("Status: "));
+            taskById.get().setStatus(Helper.getInput("Status: "));
             taskById.get().setTaskChangedAt(Timestamp.valueOf(LocalDateTime.now()));
 
             updateTask(taskById.get());
@@ -67,9 +68,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public boolean deleteTask() {
+    public boolean deleteTask(String id) {
 
-        Optional<Task> taskById = findById(getInput("Enter task id: "));
+        Optional<Task> taskById = findById(id);
 
         if (taskById.isPresent()) {
             try (PreparedStatement preparedStatement = DB_CONNECTOR.connection().prepareStatement(Query.delete)) {
@@ -135,6 +136,29 @@ public class TaskServiceImpl implements TaskService {
 
             List<Task> tasks = new ArrayList<>();
             ResultSet resultSet = statement.executeQuery(Query.sortAllTasksByStatus);
+
+            while (resultSet.next()) {
+                Task task = extractTaskFromResultSet(resultSet);
+                tasks.add(task);
+            }
+
+            return tasks;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Task> tasksByFilteringStatus(String status) {
+
+        try (PreparedStatement preparedStatement = DB_CONNECTOR.connection().prepareStatement(Query.allTasksByStatusFilter)) {
+
+            List<Task> tasks = new ArrayList<>();
+            preparedStatement.setString(1, status);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
                 Task task = extractTaskFromResultSet(resultSet);
@@ -244,16 +268,5 @@ public class TaskServiceImpl implements TaskService {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    private String getInput(String prompt) {
-        System.out.print(prompt);
-
-        Scanner scanner = new Scanner(System.in);
-        return scanner.nextLine();
-    }
-
-    private String generateId() {
-        return RandomStringUtils.randomAlphanumeric(8);
     }
 }
