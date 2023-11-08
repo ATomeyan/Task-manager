@@ -6,14 +6,14 @@ public final class Query {
     }
 
     public static final String createTable =
-            "create table if not exists task (" +
-                    "id varchar(8) not null primary key," +
-                    "title varchar(255) not null," +
-                    "description varchar(255) not null," +
-                    "status varchar(255) not null," +
-                    "due_date date not null," +
-                    "task_created_at timestamp not null," +
-                    "task_changed_at timestamp" +
+            "create table if not exists task ( " +
+                    "id varchar(8) not null primary key, " +
+                    "title varchar(255) not null, " +
+                    "description varchar(255) not null, " +
+                    "status varchar(255) not null, " +
+                    "due_date date not null, " +
+                    "task_created_at timestamp not null, " +
+                    "task_changed_at timestamp " +
             ");";
 
     public static final String viewAllTasks = "select * from task";
@@ -27,6 +27,8 @@ public final class Query {
     public static final String sortAllTasksByDueDate = "select * from task order by due_date";
 
     public static final String sortAllTasksByStatus = "select * from task order by status";
+
+    public static final String allTasksByStatusFilter = "select * from task where status = ?";
 
     public static final String updateTaskById = "UPDATE task SET " +
             "title = ?, " +
