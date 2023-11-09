@@ -3,6 +3,7 @@ package com.manager.service;
 import com.manager.database.Query;
 import com.manager.database.connector.DBConnector;
 import com.manager.model.Task;
+import com.manager.utils.DateValidator;
 import com.manager.utils.Helper;
 
 import java.sql.*;
@@ -17,29 +18,15 @@ import java.util.*;
 public class TaskServiceImpl implements TaskService {
 
     private static final DBConnector DB_CONNECTOR = DBConnector.getDbConnector();
-    private final LocalDateTime now = LocalDateTime.now();
 
     @Override
-    public Task addTask() {
+    public Task addTask(Task task) {
 
         createTable();
 
-        Task createdTask = new Task();
+        saveTask(task);
 
-        createdTask.setId(Helper.generateId());
-        createdTask.setTitle(Helper.getInput("Title: "));
-        createdTask.setDescription(Helper.getInput("Description: "));
-        createdTask.setStatus(Helper.getInput("Status: "));
-        createdTask.setTaskCreatedAt(Timestamp.valueOf(now));
-
-        LocalDate dueDate = LocalDate.parse(Helper.getInput("Due date: "));
-
-        if (validateDate(dueDate))
-            createdTask.setDueDate(dueDate);
-
-        saveTask(createdTask);
-
-        return createdTask;
+        return task;
     }
 
     @Override
@@ -57,7 +44,7 @@ public class TaskServiceImpl implements TaskService {
 
             LocalDate changedDate = LocalDate.parse(Helper.getInput("Due date: "));
 
-            if (validateDate(changedDate))
+            if (DateValidator.validateDate(changedDate))
                 taskById.get().setDueDate(changedDate);
 
             taskById.get().setStatus(Helper.getInput("Status: "));
@@ -248,15 +235,6 @@ public class TaskServiceImpl implements TaskService {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        }
-    }
-
-    private boolean validateDate(LocalDate date) {
-        if (LocalDate.now().isBefore(date))
-            return true;
-        else {
-            System.out.println("The due date is not valid and the task was rejected. Please input a valid due date.");
-            return false;
         }
     }
 

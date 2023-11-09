@@ -5,8 +5,12 @@ import com.manager.service.TaskFileService;
 import com.manager.service.TaskFileServiceImpl;
 import com.manager.service.TaskService;
 import com.manager.service.TaskServiceImpl;
+import com.manager.utils.DateValidator;
 import com.manager.utils.Helper;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
@@ -38,7 +42,8 @@ public class ConsoleUI {
             switch (menuAction) {
                 case 1 -> {
                     System.out.println("Please enter the item to add task or press the enter to return the menu.");
-                    Task task = taskService.addTask();
+                    Task createdTask = createdTask();
+                    Task task = taskService.addTask(createdTask);
                     addTaskInFile(task);
                 }
                 case 2 -> {
@@ -162,5 +167,22 @@ public class ConsoleUI {
             }
             default -> System.out.println("Invalid choice. Please select a valid option.");
         }
+    }
+
+    private Task createdTask(){
+        Task createdTask = new Task();
+
+        createdTask.setId(Helper.generateId());
+        createdTask.setTitle(Helper.getInput("Title: "));
+        createdTask.setDescription(Helper.getInput("Description: "));
+        createdTask.setStatus(Helper.getInput("Status: "));
+        createdTask.setTaskCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+
+        LocalDate dueDate = LocalDate.parse(Helper.getInput("Due date: "));
+
+        if (DateValidator.validateDate(dueDate))
+            createdTask.setDueDate(dueDate);
+
+        return createdTask;
     }
 }

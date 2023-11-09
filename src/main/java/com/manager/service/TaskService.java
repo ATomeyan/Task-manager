@@ -11,7 +11,7 @@ import java.util.Optional;
  */
 public interface TaskService {
 
-    Task addTask();
+    Task addTask(Task task);
 
     void editTask();
 
